@@ -9,11 +9,18 @@ else
     STARTPOINT="$CURRENT_BRANCH"-branchpoint
 fi
 
-echo "$STARTPOINT"
+if [ "$#" -gt 1 ];
+then
+    ENDPOINT=$2
+else
+    ENDPOINT=master
+fi
 
-MASTER_COMMITS=$(git rev-list --no-merges --reverse $STARTPOINT...master)
+echo "$STARTPOINT...$ENDPOINT"
 
-for COMMIT in $MASTER_COMMITS;
+UPSTREAM_COMMITS=$(git rev-list --no-merges --reverse $STARTPOINT...$ENDPOINT)
+
+for COMMIT in $UPSTREAM_COMMITS;
 do
    IGNORE=$(grep $COMMIT ~/.cherry-picker-blacklist)
    if [ $? -eq 0 ]
