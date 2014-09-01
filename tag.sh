@@ -14,6 +14,7 @@ echo "Setting tag $2 with comment $3 at head of branch $1"
     echo enterprise
     echo mission-portal
     echo autobuild
+    echo buildscripts
     echo masterfiles
     echo design-center
     echo system-testing
