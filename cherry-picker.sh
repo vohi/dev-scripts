@@ -40,17 +40,17 @@ do
           echo "git cherry has found an equivalent commit in $CURRENT_BRANCH"
       else
           echo "git cherry suggest that this commit should be picked"
-          TEST_CHERRY=$(git checkout -b tmp/cherry-picker)
-          TEST_CHERRY=$(git cherry-pick --allow-empty -x $COMMIT)
+          TEST_CHERRY=$(git checkout -b tmp/cherry-picker 2> /dev/null)
+          TEST_CHERRY=$(git cherry-pick --allow-empty -x $COMMIT 2> /dev/null)
           if [ $? -eq 0 ]
           then
               echo "and can do so without conflicts"
           else
               echo "but has run into merge conflicts - resolve manually and skip this commit to proceed"
           fi
-          TEST_CHERRY=$(git reset --hard)
-          TEST_CHERRY=$(git checkout $CURRENT_BRANCH)
-          TEST_CHERRY=$(git branch -D tmp/cherry-picker)
+          TEST_CHERRY=$(git reset --hard 2> /dev/null)
+          TEST_CHERRY=$(git checkout $CURRENT_BRANCH 2> /dev/null)
+          TEST_CHERRY=$(git branch -D tmp/cherry-picker 2> /dev/null)
       fi
       printf "Cherry-pick? [y/n/i/q]: "
       read yesno
