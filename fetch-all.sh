@@ -61,7 +61,7 @@ for dir in */; do
   then
     git prune
   fi
-  git fetch --all
+  git fetch --all --prune
   if $MERGE_FF
   then
     git checkout $LOCAL_BRANCH
