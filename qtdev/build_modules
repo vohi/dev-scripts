@@ -1,0 +1,115 @@
+#!/bin/bash
+
+buildtool=
+branch=$(basename $PWD)
+
+GREEN="\033[0;32m"
+RED="\033[0;31m"
+YELLOW="\e[0;33m"
+NOCOL="\033[0m"
+
+let errorcount=0
+abort=0
+
+function handler()
+{
+  abort=1
+}
+
+trap handler SIGINT
+
+function build_module()
+{
+    module=$1
+    if [ ! -d "$module" ]
+    then
+      printf "${YELLOW}Skipping $module:$branch...${NOCOL}\n"
+      return 0
+    fi
+    if [ ! -d "$module"-build ]
+    then
+      printf "${YELLOW}Skipping $module:$branch...${NOCOL}\n"
+      return 0
+    fi
+
+    printf "${GREEN}Building $module:${branch}${NOCOL}\n"
+    cd $module
+    git fetch origin
+    git stash clear 2>&1 > /dev/null
+    git stash 2>&1 > /dev/null
+    git rebase origin/$branch > /dev/null
+    git stash pop 2>&1 > /dev/null
+
+    cd ../$module-build
+    if [ -z $buildtool ]
+    then
+      if [ -f build.ninja ]
+      then
+        buildtool="ninja"
+      elif [ -f Makefile ]
+      then
+        buildtool="make"
+      elif [ -f ../$module/CMakeLists.txt ]
+      then
+        ../$module/configure -opensource -developer-build -cmake -make-tool Ninja
+        buildtool="ninja"
+      else
+        ../$module/configure -opensource -developer-build
+        buildtool="make"
+      fi
+      printf "Using $buildtool to build!\n"
+    else
+      qt $branch ../$module
+    fi
+
+    if [ $buildtool = "ninja" ]
+    then
+      ninja src/all
+    else
+      make sub-src -j8 > build_log.txt
+    fi
+
+    error=$?
+    cd ..
+    if [ $error -gt 0 ]
+    then
+      color=${RED}
+    else
+      color=${GREEN}
+    fi
+    printf "${color}Done building $module:$branch${NOCOL}\n"
+
+    return $error
+}
+
+if [ $# -eq 0 ]
+then
+  GLOBIGNORE="qtbase:*-build:*.code-workspace:.vscode"; modules=( "qtbase" * )
+else
+  modules=( "${@}" )
+fi
+
+echo "Building modules: ${modules[@]}"
+
+for module in "${modules[@]}"
+do
+  build_module $module
+  error=$?
+  if [ $error -gt 0 ]
+  then
+    let errorcount++
+    printf "${RED}Error building ${module}:${branch}!${NOCOL}\n"
+  fi
+  if [ $abort -gt 0 ]
+  then
+    printf "${RED}Aborted${NOCOL}\n"
+    exit 128
+  fi
+done
+
+if [ $errorcount -gt 0 ]
+then
+  printf "${RED}Done with errors!${NOCOL}\n"
+else
+  printf "${GREEN}Done!${NOCOL}\n"
+fi

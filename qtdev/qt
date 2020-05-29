@@ -1,0 +1,97 @@
+#!/bin/bash
+
+toolsdir=$(dirname $0)
+templatedir="$toolsdir/vscode_templates"
+
+if [ -z "$1" ]; then
+  echo "Usage: qt version {-arch =clang_64} {source_dir}"
+  exit 1
+fi
+
+VERSION=$1
+shift
+
+# try official package
+QTDIR=$HOME/qt/packages/"$VERSION"/
+ARCH=clang_64/
+
+# build from git branch, shadow build
+if [ ! -d "$QTDIR" ]; then
+  QTDIR="$HOME/qt/$VERSION/qtbase-build/"
+  ARCH=""
+fi
+
+# build from git branch, no shadow build
+if [ ! -d "$QTDIR" ]; then
+  QTDIR="$HOME/qt/$VERSION/qtbase/"
+  ARCH=""
+fi
+
+if [ ! -d "$QTDIR" ]; then
+  echo "No Qt version $VERSION found, tried $QTDIR - aborting"
+  return
+fi
+
+
+if [ "$1" = "-arch" ]; then
+  ARCH=$2
+  echo "Using architecture $ARCH"
+  if [ ! -d "$QTDIR$ARCH" ]; then
+    echo "Architecture $ARCH not available in $QTDIR, ignoring"
+    ARCH=""
+  else
+    ARCH=$ARCH/
+  fi
+  shift
+  shift
+fi
+
+input="CMakeLists.txt"
+SOURCE=$PWD
+if [ ! -z $1 ] && [ -d "$1" ]
+then
+  SOURCE="$1"
+  input=$SOURCE/$input
+  if [ ! -d "src" ]
+  then
+    ln -s "$SOURCE" source
+  fi
+  shift
+fi
+
+error=1
+printf "Using Qt in '${QTDIR}${ARCH}'"
+if [ -f "${QTDIR}${ARCH}bin/qt-cmake" ] && [ -f $input ]; then
+  printf ", trying 'qt-cmake'..."
+  cmakeerror=$(${QTDIR}${ARCH}"bin/qt-cmake" -GNinja $SOURCE $@ 2>&1 > /dev/null)
+  error=$?
+fi
+
+if [ $error -gt 0 ]
+then
+  printf ", running 'qmake'\n"
+  ${QTDIR}${ARCH}"bin/qmake" "${@}" "$SOURCE"
+  error=$?
+  if [ ! -f "Makefile" ]
+  then
+    error=1
+  fi
+else
+  printf "\n"
+fi
+
+if [ ! -d .vscode ] && [ $error -eq 0 ]
+then
+  PROJECT=$(basename $PWD)
+
+  echo "Setting up Visual Studio Code tasks for project '$PROJECT'"
+  mkdir .vscode 2> /dev/null
+  cp $templatedir/launch.json .vscode/launch.json
+  sed -i '' 's:\$PROJECT:'${PROJECT}':g' .vscode/launch.json
+  sed -i '' 's:\$SOURCE:'${SOURCE}':g' .vscode/launch.json
+  cp $templatedir/tasks_app.json .vscode/tasks.json
+  sed -i '' 's:\$PROJECT:'${PROJECT}':g' .vscode/tasks.json
+  sed -i '' 's:\$VERSION:'${VERSION}':g' .vscode/tasks.json
+  sed -i '' 's:\$SOURCE:'${SOURCE}':g' .vscode/tasks.json
+  sed -i '' 's:\$ARGS:'${@}':g' .vscode/tasks.json
+fi

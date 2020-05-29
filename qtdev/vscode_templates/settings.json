@@ -1,0 +1,6 @@
+{
+    "search.exclude": {
+        "**": true
+    },
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/compile_commands.json"
+}

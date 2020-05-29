@@ -1,0 +1,61 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"*-build/**": true
+		},
+		"C_Cpp.default.includePath": [
+			"qtbase/mkspecs/macx-clang",
+
+			"qtbase-build/include",
+
+			"qtbase/src/corelib",
+			"qtbase-build/include/QtCore",
+			"qtbase-build/include/QtCore/6.0.0",
+			"qtbase-build/include/QtCore/6.0.0/QtCore",
+			"qtbase-build/src/corelib/Core_autogen/include",
+
+			"qtbase/src/gui",
+			"qtbase-build/include/QtGui",
+			"qtbase-build/include/QtGui/6.0.0",
+			"qtbase-build/include/QtGui/6.0.0/QtGui",
+			"qtbase-build/src/gui/Gui_autogen/include",
+
+			"qtbase/src/network",
+			"qtbase-build/include/QtNetwork",
+			"qtbase-build/include/QtNetwork/6.0.0",
+			"qtbase-build/include/QtNetwork/6.0.0/QtNetwork",
+			"qtbase-build/src/network/Network_autogen/include",
+
+			"qtbase/src/widgets",
+			"qtbase-build/include/QtWidgets",
+			"qtbase-build/include/QtWidgets/6.0.0",
+			"qtbase-build/include/QtWidgets/6.0.0/QtWidgets",
+			"qtbase-build/src/widgets/Widgets_autogen/include",
+
+			"qtbase/src/opengl",
+			"qtbase-build/include/QtOpenGL",
+			"qtbase-build/include/QtOpenGL/6.0.0",
+			"qtbase-build/include/QtOpenGL/6.0.0/QtOpenGL",
+			"qtbase-build/src/opengl/OpenGL_autogen/include",
+
+			"qtdeclarative/src/qml",
+			"qtbase-build/include/QtQml",
+			"qtbase-build/include/QtQml/6.0.0",
+			"qtbase-build/include/QtQml/6.0.0/QtQml",
+			"qtdeclarative-build/src/qml/Qml_autogen/include",
+
+			"qtdeclarative/src/quick",
+			"qtbase-build/include/QtQuick",
+			"qtbase-build/include/QtQuick/6.0.0",
+			"qtbase-build/include/QtQuick/6.0.0/QtQuick",
+			"qtdeclarative-build/src/quick/Quick_autogen/include",
+
+			"qtbase-build/include/QtSvg"
+		]
+	}
+}

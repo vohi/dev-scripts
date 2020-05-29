@@ -1,0 +1,44 @@
+#!/bin/bash
+
+project=$(basename $PWD)
+toolsdir=$(dirname $0)
+templatedir="$toolsdir/vscode_templates"
+
+if [ ! -z "$1" ]
+then
+    branch="$1"
+    branchdir="../../$branch"
+else
+    echo "Usage: code_init [branch]"
+    exit 1 
+fi
+
+projectdir=$branchdir/$project
+builddir="$branchdir/$project-build"
+
+if [ ! -d "$projectdir" ]
+then
+    echo "Initializing worktree and buildtree for $project:$branch..."
+    git worktree add "$projectdir" "$branch"
+    mkdir -p "$builddir" 2>&1 > /dev/null
+fi
+
+if [ ! -f "$branchdir/$branch.code-workspace" ]
+then
+    printf "Setting up Visual Studio Code workspace for $branch "
+
+    mkdir -p "$branchdir/.vscode" 2>&1 > /dev/null
+    cp "$templatedir/template.code-workspace" "$branchdir/$branch.code-workspace"
+    cp "$templatedir/tasks.json" "$branchdir/.vscode/tasks.json"
+    if [ ! -f "$projectdir/CMakeLists" ]
+    then
+        printf "using qmake build system\n"
+        sed -i '' 's/\ -cmake/''/g' $branchdir/.vscode/tasks.json
+    else
+        printf "using cmake build system (default)\n"
+    fi
+
+    cp "$templatedir/c_cpp_properties.json" "$branchdir/.vscode/c_cpp_properties.json"
+fi
+
+code "$branchdir/$branch.code-workspace"

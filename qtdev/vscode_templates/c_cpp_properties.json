@@ -1,0 +1,15 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "defines": [
+                "__APPLE__",
+                "TARGET_OS_MAC"
+            ],
+            "macFrameworkPath": [],
+            "compilerPath": "/usr/local/bin/gcc-9",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}
