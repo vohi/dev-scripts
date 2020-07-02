@@ -82,6 +82,7 @@ fi
 
 if [ ! -d .vscode ] && [ $error -eq 0 ]
 then
+  BUILD=$PWD
   PROJECT=$(basename $PWD)
 
   echo "Setting up Visual Studio Code tasks for project '$PROJECT'"
@@ -89,9 +90,11 @@ then
   cp $templatedir/launch.json .vscode/launch.json
   sed -i '' 's:\$PROJECT:'${PROJECT}':g' .vscode/launch.json
   sed -i '' 's:\$SOURCE:'${SOURCE}':g' .vscode/launch.json
+  sed -i '' 's:\$BUILD:'${BUILD}':g' .vscode/launch.json
   cp $templatedir/tasks_app.json .vscode/tasks.json
   sed -i '' 's:\$PROJECT:'${PROJECT}':g' .vscode/tasks.json
   sed -i '' 's:\$VERSION:'${VERSION}':g' .vscode/tasks.json
   sed -i '' 's:\$SOURCE:'${SOURCE}':g' .vscode/tasks.json
+  sed -i '' 's:\$BUILD:'${BUILD}':g' .vscode/tasks.json
   sed -i '' 's:\$ARGS:'${@}':g' .vscode/tasks.json
 fi

@@ -10,7 +10,7 @@
             "MIMode": "lldb",
             "type": "cppdbg",
             "request": "launch",
-            "program": "$SOURCE/$PROJECT.app/Contents/MacOS/$PROJECT",
+            "program": "$BUILD/$PROJECT.app/Contents/MacOS/$PROJECT",
             "args": [],
             "environment": [
                 {
@@ -25,7 +25,7 @@
             },
             "visualizerFile": "/Users/vohi/qt6.natvis",
             "showDisplayString": true,
-            "cwd": "$SOURCE"
+            "cwd": "$BUILD"
         }
     ]
 }

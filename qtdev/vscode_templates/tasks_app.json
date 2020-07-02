@@ -6,7 +6,7 @@
             "type": "shell",
             "command": "if [ -f build.ninja ]; then ninja; else make -j8; fi",
             "options": {
-                "cwd": "$SOURCE"
+                "cwd": "$BUILD"
             },
             "group": {
                 "kind": "build",
@@ -33,7 +33,7 @@
             "type": "shell",
             "command": "if [ -f build.ninja ]; then ninja clean; else make -j8 clean; fi",
             "options": {
-                "cwd": "$SOURCE"
+                "cwd": "$BUILD"
             },
             "group": "build",
             "problemMatcher": {
@@ -57,7 +57,7 @@
             "type": "shell",
             "command": "qt $VERSION $SOURCE $ARGS",
             "options": {
-                "cwd": "$SOURCE"
+                "cwd": "$BUILD"
             },
             "group": "build",
             "problemMatcher": {
