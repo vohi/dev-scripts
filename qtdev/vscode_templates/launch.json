@@ -12,6 +12,7 @@
             "request": "launch",
             "program": "$BUILD/$PROJECT.app/Contents/MacOS/$PROJECT",
             "args": [],
+            "internalConsoleOptions": "openOnSessionStart",
             "environment": [
                 {
                     "name": "DYLD_IMAGE_SUFFIX",
