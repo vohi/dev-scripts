@@ -40,6 +40,7 @@ function build_module()
     git rebase origin/$branch > /dev/null
     git stash pop 2>&1 > /dev/null
 
+    configure="-opensource -developer-build -confirm-license -nomake examples -nomake tests"
     cd ../$module-build
     if [ -z $buildtool ]
     then
@@ -51,10 +52,10 @@ function build_module()
         buildtool="make"
       elif [ -f ../$module/CMakeLists.txt ]
       then
-        ../$module/configure -opensource -developer-build -cmake -make-tool Ninja
+        ../$module/configure $configure -cmake -cmake-generator Ninja
         buildtool="ninja"
       else
-        ../$module/configure -opensource -developer-build
+        ../$module/configure $configure
         buildtool="make"
       fi
       printf "Using $buildtool to build!\n"
@@ -64,9 +65,9 @@ function build_module()
 
     if [ $buildtool = "ninja" ]
     then
-      ninja src/all
+      ninja
     else
-      make sub-src -j8 > build_log.txt
+      make -j8 > build_log.txt
     fi
 
     error=$?
