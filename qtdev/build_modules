@@ -85,10 +85,17 @@ function build_module()
 
 if [ $# -eq 0 ]
 then
-  GLOBIGNORE="qtbase:*-build:*.code-workspace:.vscode"; modules=( "qtbase" * )
+  GLOBIGNORE="qtbase:*-build:*.code-workspace:.vscode"; entries=( "qtbase" * )
 else
-  modules=( "${@}" )
+  entries=( "${@}" )
 fi
+
+modules=()
+
+for entry in "${entries[@]}"
+do
+  [ -d $entry ] && modules=(${modules[@]} $entry)
+done
 
 echo "Building modules: ${modules[@]}"
 
