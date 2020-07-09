@@ -32,5 +32,3 @@ then
   git log --oneline $remote/$branch...
   git push gerrit HEAD:refs/for/$branch
 fi
-
-git switch - 2> /dev/null
