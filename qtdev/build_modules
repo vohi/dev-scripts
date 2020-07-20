@@ -47,35 +47,31 @@ function build_module()
       git stash pop 2>&1 > /dev/null
     fi
 
-    configure="-opensource -developer-build -confirm-license -nomake examples -nomake tests"
+    configure="-opensource -developer-build -confirm-license -nomake examples"
     cd ../$module-build
-    if [ -z $buildtool ]
+    if [ -z "$buildtool" ]
     then
       if [ -f build.ninja ]
       then
-        buildtool="ninja"
+        buildtool="ninja src/all qmake"
       elif [ -f Makefile ]
       then
-        buildtool="make"
+        buildtool="make sub-src -j8 > build_log.txt"
       elif [ -f ../$module/CMakeLists.txt ]
       then
         ../$module/configure $configure -cmake -cmake-generator Ninja
-        buildtool="ninja"
+        buildtool="ninja src/all qmake"
       else
         ../$module/configure $configure
-        buildtool="make"
+        buildtool="make sub-src -j8 > build_log.txt"
       fi
-      printf "Using $buildtool to build!\n"
+      printf "Using '$buildtool' to build!\n"
     else
       qt $branch ../$module
+      buildtool=$(echo "$buildtool" | awk '{print $1}')
     fi
 
-    if [ $buildtool = "ninja" ]
-    then
-      ninja
-    else
-      make -j8 > build_log.txt
-    fi
+    $buildtool
 
     error=$?
     cd ..
