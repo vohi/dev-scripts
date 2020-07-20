@@ -35,10 +35,17 @@ function build_module()
     printf "${GREEN}Building $module:${branch}${NOCOL}\n"
     cd $module
     git fetch origin
-    git stash clear 2>&1 > /dev/null
-    git stash 2>&1 > /dev/null
+    stashsha=$(git stash create)
+    if [ ! -z $stashsha ]
+    then
+      git stash store $stashsha -m "From build_modules"
+      git reset --hard
+    fi
     git rebase origin/$branch > /dev/null
-    git stash pop 2>&1 > /dev/null
+    if [ ! -z $stashsha ]
+    then
+      git stash pop 2>&1 > /dev/null
+    fi
 
     configure="-opensource -developer-build -confirm-license -nomake examples -nomake tests"
     cd ../$module-build
