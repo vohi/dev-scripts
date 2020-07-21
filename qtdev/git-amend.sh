@@ -1,16 +1,17 @@
 if [ $# == 0 ]
 then
-    git commit --amend -a
+    git commit --amend
     exit $?
 fi
 
 sha=$1
 branch=$(git branch --show-current --no-color)
 
-status=$(git status -s)
-if [ ! -z status ]
+  stashsha="$(git stash create)"
+if [ ! -z stashsha ]
 then
-  git stash
+    git stash store
+    git reset --hard
 fi
 
 git checkout -b temp origin/$branch 2> /dev/null
@@ -24,12 +25,12 @@ then
     exit $error
 fi
 
-if [ ! -z status ]
+if [ ! -z stashsha ]
 then
     git stash pop
 fi
 
-git commit -a --amend
+git commit --amend
 error=$?
 
 git switch -
