@@ -63,7 +63,7 @@ error=-1
 printf "Using Qt in '${QTDIR}${ARCH}' to build '$SOURCE'"
 if [ -f "${QTDIR}${ARCH}bin/qt-cmake" ] && [ -f $input ]; then
   printf ", trying 'qt-cmake'..."
-  cmakeerror=$(${QTDIR}${ARCH}"bin/qt-cmake" -GNinja $SOURCE $@ 2>&1 > /dev/null)
+  cmakeerror=$(${QTDIR}${ARCH}"bin/qt-cmake" -GNinja $SOURCE $@ > /dev/null)
   error=$?
 fi
 
