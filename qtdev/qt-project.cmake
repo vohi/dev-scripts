@@ -1,6 +1,6 @@
 macro(qt_project template qt)
     get_filename_component(name ${CMAKE_CURRENT_LIST_DIR} NAME)
-
+    set(CMAKE_INCLUDE_CURRENT_DIR ON)
     set(CMAKE_AUTOMOC ON)
     set(CMAKE_AUTORCC ON)
     set(CMAKE_AUTOUIC ON)
