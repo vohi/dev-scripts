@@ -22,7 +22,11 @@ macro(qt_project template qt)
 
     # remove CMake-generated files
     file(RELATIVE_PATH buildDir ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_BINARY_DIR})
-    list(FILTER all_files EXCLUDE REGEX "${buildDir}/*")
+    if(${CMAKE_CURRENT_LIST_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+        list(FILTER all_files EXCLUDE REGEX "CMakeFiles/*")
+    else()
+        list(FILTER all_files EXCLUDE REGEX "${buildDir}/*")
+    endif()
 
     if (template STREQUAL "app")
         add_executable( ${name} ${all_files})
