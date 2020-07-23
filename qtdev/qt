@@ -59,15 +59,16 @@ then
   shift
 fi
 
-error=1
-printf "Using Qt in '${QTDIR}${ARCH}'"
+error=-1
+printf "Using Qt in '${QTDIR}${ARCH}' to build '$SOURCE'"
 if [ -f "${QTDIR}${ARCH}bin/qt-cmake" ] && [ -f $input ]; then
   printf ", trying 'qt-cmake'..."
   cmakeerror=$(${QTDIR}${ARCH}"bin/qt-cmake" -GNinja $SOURCE $@ 2>&1 > /dev/null)
   error=$?
 fi
 
-if [ $error -gt 0 ]
+# no CMakeLists or no qt-cmake
+if [ $error -lt 0 ]
 then
   printf ", running 'qmake'\n"
   ${QTDIR}${ARCH}"bin/qmake" "${@}" "$SOURCE"
@@ -76,6 +77,11 @@ then
   then
     error=1
   fi
+# cmake failure
+elif [ $error -gt 0 ]
+then
+  printf " - Error running cmake:\n%s\n" "$cmakeerror"
+  exit $error
 else
   printf "\n"
 fi
