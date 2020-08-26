@@ -22,6 +22,7 @@ if [ "$count" -gt 1 ]
 then
   cd $repository
   git checkout $remote/$branch 2> /dev/null
+  git reset --hard $remote/$branch
   git cherry-pick $sha
   error=$?
 fi
