@@ -52,7 +52,7 @@ if [ ! -z $1 ] && [ -d "$1" ]
 then
   SOURCE="$1"
   input=$SOURCE/$input
-  if [ ! -d "src" ]
+  if [ ! -d "src" ] && [ ! -d "source" ]
   then
     ln -s "$SOURCE" source
   fi
