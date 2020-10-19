@@ -1,0 +1,29 @@
+#!/bin/bash
+
+branch=$(basename $PWD)
+
+for subproject in */
+do
+    [ ! -f "${subproject}.git" ] && continue
+    subproject=$(basename $subproject)
+
+    echo "Updating $subproject"
+    cd $subproject
+    git stash push -m "Temporary"
+    git fetch
+    git checkout $branch
+
+    stashsha=$(git stash create)
+    if [ ! -z $stashsha ]
+    then
+      git stash store $stashsha -m "From $0"
+      git reset --hard
+    fi
+
+    git rebase origin/$branch > /dev/null
+
+    [ ! -z $stashsha ] && git stash pop &> /dev/null
+
+    echo "$subproject Updated"
+    cd ..
+done

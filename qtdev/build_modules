@@ -88,7 +88,7 @@ function build_module()
 
 if [ $# -eq 0 ]
 then
-  GLOBIGNORE="qtbase:*-build:*.code-workspace:.vscode"; entries=( "qtbase" * )
+  GLOBIGNORE="qtbase:*-build:*.code-workspace:.vscode:qt5"; entries=( "qtbase" * )
 else
   entries=( "${@}" )
 fi
