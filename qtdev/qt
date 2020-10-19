@@ -17,7 +17,7 @@ ARCH=clang_64/
 
 # build from git branch, shadow build
 if [ ! -d "$QTDIR" ]; then
-  QTDIR="$HOME/qt/$VERSION/qtbase-build/"
+  QTDIR="$HOME/qt/$VERSION/build/qtbase/"
   ARCH=""
 fi
 
@@ -97,6 +97,7 @@ then
   sed -i '' 's:\$PROJECT:'${PROJECT}':g' .vscode/launch.json
   sed -i '' 's:\$SOURCE:'${SOURCE}':g' .vscode/launch.json
   sed -i '' 's:\$BUILD:'${BUILD}':g' .vscode/launch.json
+  sed -i '' 's:\$HOME:'${HOME}':g' .vscode/launch.json
   cp $templatedir/tasks_app.json .vscode/tasks.json
   sed -i '' 's:\$PROJECT:'${PROJECT}':g' .vscode/tasks.json
   sed -i '' 's:\$VERSION:'${VERSION}':g' .vscode/tasks.json
