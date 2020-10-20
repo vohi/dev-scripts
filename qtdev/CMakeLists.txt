@@ -10,6 +10,7 @@ project(Qt
 )
 
 # Required so we can call ctest from the root build directory
+set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1)
 enable_testing()
 
 set(qt_module_prop_prefix "__qt_prop_")
@@ -66,6 +67,7 @@ foreach(project ${subproject_list_ordered})
         endif()
     endif()
 endforeach()
+
 # Check for unmet dependencies
 foreach(module IN LISTS subproject_list_ordered)
     foreach(dep IN LISTS "${qt_module_prop_prefix}${module}_depends")
@@ -83,7 +85,6 @@ foreach(module IN LISTS subproject_list_ordered)
         endif()
     endforeach()
 endforeach()
-
 
 if(NOT QT_BUILD_STANDALONE_TESTS)
     # Display a summary of everything
