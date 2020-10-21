@@ -9,20 +9,22 @@ do
 
     echo "Updating $subproject"
     cd $subproject
-    git stash push -m "Temporary"
     git fetch
     git checkout $branch
 
-    stashsha=$(git stash create)
+    stashsha=$(git stash create /dev/null)
     if [ ! -z $stashsha ]
     then
       git stash store $stashsha -m "From $0"
       git reset --hard
     fi
 
-    git rebase origin/$branch > /dev/null
+    git rebase origin/$branch
 
-    [ ! -z $stashsha ] && git stash pop &> /dev/null
+    if [ ! -z $stashsha ]
+    then
+      git stash pop
+    fi
 
     echo "$subproject Updated"
     cd ..
