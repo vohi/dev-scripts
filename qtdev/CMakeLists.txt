@@ -70,12 +70,15 @@ endforeach()
 
 # Check for unmet dependencies
 foreach(project IN LISTS subproject_list_ordered)
+    add_custom_target(${project}_src COMMAND ${CMAKE_COMMAND} --build . --parallel --target ${project}/src/all USES_TERMINAL)
+    add_custom_target(${project}_all COMMAND ${CMAKE_COMMAND} --build . --parallel --target ${project}/all USES_TERMINAL)
+    add_custom_target(${project}_clean COMMAND ${CMAKE_COMMAND} --build . --parallel --target ${project}/clean USES_TERMINAL)
     foreach(dep IN LISTS "${qt_module_prop_prefix}${project}_depends")
         if (dep STREQUAL qtbase)
             # Always available skip
             continue()
         endif()
-        if (DEFINED BUILD_${module} AND BUILD_${module})
+        if (DEFINED BUILD_${project} AND BUILD_${project})
             if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${dep}/CMakeLists.txt")
                 message(FATAL_ERROR "Module '${project} depends on '${dep}', but ${deps}'s CMakeLists.txt couldn't be found.\n")
             endif()
