@@ -15,9 +15,15 @@ shift
 QTDIR=$HOME/qt/packages/"$VERSION"/
 ARCH=clang_64/
 
-# build from git branch, shadow build
+# build from git branch, shadow toplevel build
 if [ ! -d "$QTDIR" ]; then
   QTDIR="$HOME/qt/$VERSION/build/qtbase/"
+  ARCH=""
+fi
+
+# build from git branch, shadow build, not toplevel
+if [ ! -d "$QTDIR" ]; then
+  QTDIR="$HOME/qt/$VERSION/qtbase-build/"
   ARCH=""
 fi
 
