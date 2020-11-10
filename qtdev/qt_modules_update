@@ -26,6 +26,8 @@ do
       git stash pop
     fi
 
+    git submodule update
+
     echo "$subproject Updated"
     cd ..
 done
