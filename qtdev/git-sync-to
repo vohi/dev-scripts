@@ -1,0 +1,8 @@
+#!/bin/sh
+
+module="$1"
+shift
+revision="$1"
+shift
+
+cmake -DSYNC_TO_MODULE="$module" -DSYNC_TO_BRANCH="$revision" "$@" -P cmake/QtSynchronizeRepo.cmake
