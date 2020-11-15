@@ -1,4 +1,5 @@
-macro(qt_project template qt)
+function(qt_project template qt)
+    message(NOTICE "Unused argumnets: ${qt}")
     get_filename_component(name ${CMAKE_CURRENT_LIST_DIR} NAME)
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
     set(CMAKE_AUTOMOC ON)
@@ -14,7 +15,6 @@ macro(qt_project template qt)
          "*.h"
         )
 
-    set(template ${template}) # why?!
     list(APPEND qt_modules "${qt}")
 
     list(APPEND all_files ${source_files})
