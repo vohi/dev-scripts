@@ -17,7 +17,7 @@ ARCH=clang_64/
 
 # build from git branch, shadow toplevel build
 if [ ! -d "$QTDIR" ]; then
-  QTDIR="$HOME/qt/$VERSION/build/qtbase/"
+  QTDIR="$HOME/qt/$VERSION-build/qtbase/"
   ARCH=""
 fi
 
