@@ -3,7 +3,8 @@
 sha="$*"
 branch=$(git branch --show-current --no-color)
 remote="origin"
-repository=$(git worktree list | head -n 1 | awk '{print $1}')
+repository=$(git rev-parse --git-dir)
+repository=${repository%/\.git/worktrees*}
 
 if [ -z "$1" ]
 then
