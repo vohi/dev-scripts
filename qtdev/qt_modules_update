@@ -2,13 +2,10 @@
 
 branch=$(basename $PWD)
 
-for subproject in */
-do
-    [ ! -f "${subproject}.git" ] && continue
-    subproject=$(basename $subproject)
+superrepo=""
 
-    echo "Updating $subproject"
-    cd $subproject
+function update
+{
     git fetch
     git checkout $branch
 
@@ -27,7 +24,37 @@ do
     fi
 
     git submodule update
+}
+
+for subproject in */
+do
+    [ ! -f "${subproject}.git" ] && continue
+    subproject=$(basename $subproject)
+
+    echo "Updating $subproject"
+    cd $subproject
+
+    if [ -z $superrepo ]
+    then
+      superrepo=$(git rev-parse --git-dir)
+      superrepo="${superrepo%\.git*}"
+      superrepo="${superrepo%$subproject*}"
+    fi
+
+    update
 
     echo "$subproject Updated"
     cd ..
 done
+
+if [ ! -z $superrepo ]
+then
+  cd $superrepo
+  update
+  cd -
+  echo "Synchronizing toplevel build files from $superrepo to $PWD"
+  ln -f ${superrepo}cmake/* cmake
+  ln -f ${superrepo}CMakeLists.txt .
+  ln -f ${superrepo}configure* .
+  ln -f ${superrepo}_clang-format .
+fi
