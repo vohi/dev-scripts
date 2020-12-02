@@ -15,4 +15,10 @@ shift
 revision="$1"
 shift
 
+if [ ! -d $module ]
+then
+    >&2 echo "Can't find worktree for the reference module '$module'"
+    exit 2
+fi
+
 cmake -DSYNC_TO_MODULE="$module" -DSYNC_TO_BRANCH="$revision" "$@" -P cmake/QtSynchronizeRepo.cmake
