@@ -1,7 +1,23 @@
 #!/bin/bash
 
-sha="$*"
 branch=$(git branch --show-current --no-color)
+
+case "$1" in
+  --branch)
+    shift
+    branch=$1
+    shift
+    ;;
+esac
+
+if [ -z "$branch" ]
+then
+    >&2 echo "fatal: Can't identify which branch to push to"
+    exit 1
+fi
+
+sha="$*"
+
 remote="origin"
 repository=$(git rev-parse --git-dir)
 repository=${repository%/\.git/worktrees*}
