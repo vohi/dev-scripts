@@ -22,8 +22,6 @@ function update
     then
       git stash pop
     fi
-
-    git submodule update
 }
 
 for subproject in */
@@ -42,12 +40,21 @@ do
     fi
 
     update
+    git submodule update
 
     echo "$subproject Updated"
     cd ..
 done
 
-if [ ! -z $superrepo ]
+if [ -f .git_worktree ]
+then
+  echo "Updating toplevel project"
+  pwd
+  mv .git_worktree .git
+  update
+  mv .git .git_worktree
+  echo "Toplevel project updated"
+elif [ ! -z $superrepo ]
 then
   cd $superrepo
   update
@@ -58,3 +65,8 @@ then
   ln -f ${superrepo}configure* .
   ln -f ${superrepo}_clang-format .
 fi
+
+for subproject in */
+do
+  [[ "$(ls -A ${subproject})" ]] || rm -r "${subproject}"
+done
