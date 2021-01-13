@@ -1,6 +1,11 @@
 #!/bin/bash
 
 branch=$(git branch --show-current --no-color)
+remote="$(git rev-parse --abbrev-ref --symbolic-full-name @{u})"
+remote_branch=${remote#*"/"}
+remote=${remote%%"/"*}
+push_remote="$remote"
+[[ $push_remote = "origin" ]] && push_remote="gerrit"
 
 case "$1" in
   --branch)
@@ -18,7 +23,6 @@ fi
 
 sha="$*"
 
-remote="origin"
 repository=$(git rev-parse --git-dir)
 repository=${repository%/\.git/worktrees*}
 
@@ -34,7 +38,7 @@ then
     remote="gerrit"
 fi
 
-count=$(git rev-list --count $remote/$branch...$branch)
+count=$(git rev-list --count $remote/$remote_branch...$branch)
 error=0
 
 if [ "$count" -gt 1 ]
@@ -48,7 +52,7 @@ fi
 
 if [ "$error" -eq 0 ]
 then
-  echo "Pushing..."
-  git log --oneline $remote/$branch...
-  git push gerrit HEAD:refs/for/$branch
+  echo "Pushing to $push_remote/$remote_branch..."
+  git log --oneline $remote/$remote_branch...
+  git push $push_remote HEAD:refs/for/$remote_branch
 fi
