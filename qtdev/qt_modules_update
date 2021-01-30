@@ -1,13 +1,13 @@
 #!/bin/bash
 
-branch=$(basename $PWD)
-
-superrepo=""
-
 function update
 {
-    git fetch
+    git fetch --all
     git checkout $branch
+
+    remote=$(git rev-parse --abbrev-ref --symbolic-full-name @{u})
+    remote=${remote%%"/"*}
+    [[ -z $remote ]] && remote="origin"
 
     stashsha=$(git stash create /dev/null)
     if [ ! -z $stashsha ]
@@ -16,13 +16,40 @@ function update
       git reset --hard
     fi
 
-    git rebase origin/$branch
+    git rebase $remote/$branch
 
     if [ ! -z $stashsha ]
     then
       git stash pop
     fi
 }
+
+if [ -f .git_worktree ]
+then
+  echo "Updating toplevel project"
+  pwd
+  mv .git_worktree .git
+  branch=$(git branch --show-current --no-color)
+  update
+  mv .git .git_worktree
+  echo "Toplevel project updated"
+elif [ -f .git ]
+then
+  branch=$(git branch --show-current --no-color)
+else
+  branch=$(basename $PWD)
+fi
+
+[[ -z $branch ]] && echo "Can't determine branch"
+
+echo "Updating $branch"
+
+for subproject in */
+do
+  [[ "$(ls -A ${subproject})" ]] || rm -r "${subproject}"
+done
+
+superrepo=""
 
 for subproject in */
 do
@@ -44,29 +71,4 @@ do
 
     echo "$subproject Updated"
     cd ..
-done
-
-if [ -f .git_worktree ]
-then
-  echo "Updating toplevel project"
-  pwd
-  mv .git_worktree .git
-  update
-  mv .git .git_worktree
-  echo "Toplevel project updated"
-elif [ ! -z $superrepo ]
-then
-  cd $superrepo
-  update
-  cd -
-  echo "Synchronizing toplevel build files from $superrepo to $PWD"
-  ln -f ${superrepo}cmake/* cmake
-  ln -f ${superrepo}CMakeLists.txt .
-  ln -f ${superrepo}configure* .
-  ln -f ${superrepo}_clang-format .
-fi
-
-for subproject in */
-do
-  [[ "$(ls -A ${subproject})" ]] || rm -r "${subproject}"
 done
