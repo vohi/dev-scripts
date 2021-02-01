@@ -1,38 +1,69 @@
 #!/bin/bash
 
+GREEN="\033[0;32m"
+RED="\033[0;31m"
+YELLOW="\e[0;33m"
+NOCOL="\033[0m"
+
+function log
+{
+  template="$1"
+  shift
+  printf "${YELLOW}${template}${NOCOL}\n" "$@"
+}
+
 function update
 {
-    git fetch --all
-    git checkout $branch
+  unique_upstreams=()
+  upstreams=( "$(git branch --format='%(upstream)')" )
+  for upstream in ${upstreams[@]}
+  do
+    upstream=${upstream#"refs/remotes/"""}
+    upstream=${upstream%%"/"*}
+    for unique in ${unique_upstreams[@]}
+    do
+      [[ ${unique} == ${upstream} ]] && upstream=""
+    done
+    [[ -z $upstream ]] && continue
+    unique_upstreams=( ${unique_upstreams[@]} $upstream )
+  done
 
-    remote=$(git rev-parse --abbrev-ref --symbolic-full-name @{u})
-    remote=${remote%%"/"*}
-    [[ -z $remote ]] && remote="origin"
+  log "Fetching %s" "${unique_upstreams[@]}"
+  for upstream in ${unique_upstreams[@]}
+  do
+    git fetch $upstream
+  done
 
-    stashsha=$(git stash create /dev/null)
-    if [ ! -z $stashsha ]
-    then
-      git stash store $stashsha -m "From $0"
-      git reset --hard
-    fi
+  git checkout $branch
 
-    git rebase $remote/$branch
+  remote=$(git rev-parse --abbrev-ref --symbolic-full-name @{u})
+  remote=${remote%%"/"*}
+  [[ -z $remote ]] && remote="origin"
 
-    if [ ! -z $stashsha ]
-    then
-      git stash pop
-    fi
+  stashsha=$(git stash create /dev/null)
+  if [ ! -z $stashsha ]
+  then
+    git stash store $stashsha -m "From $0"
+    git reset --hard
+  fi
+
+  git rebase $remote/$branch
+
+  if [ ! -z $stashsha ]
+  then
+    git stash pop
+  fi
 }
 
 if [ -f .git_worktree ]
 then
-  echo "Updating toplevel project"
+  log "Updating toplevel project"
   pwd
   mv .git_worktree .git
   branch=$(git branch --show-current --no-color)
   update
   mv .git .git_worktree
-  echo "Toplevel project updated"
+  log "Toplevel project updated"
 elif [ -f .git ]
 then
   branch=$(git branch --show-current --no-color)
@@ -42,7 +73,7 @@ fi
 
 [[ -z $branch ]] && echo "Can't determine branch"
 
-echo "Updating $branch"
+log "Updating $branch"
 
 for subproject in */
 do
@@ -56,7 +87,7 @@ do
     [ ! -f "${subproject}.git" ] && continue
     subproject=$(basename $subproject)
 
-    echo "Updating $subproject"
+    log "Updating $subproject"
     cd $subproject
 
     if [ -z $superrepo ]
@@ -69,6 +100,6 @@ do
     update
     git submodule update
 
-    echo "$subproject Updated"
+    log "$subproject Updated"
     cd ..
 done
