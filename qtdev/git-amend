@@ -9,7 +9,7 @@ fi
 sha=$1
 branch=$(git branch --show-current --no-color)
 
-  stashsha="$(git stash create)"
+stashsha="$(git stash create)"
 if [ ! -z stashsha ]
 then
     git stash store
