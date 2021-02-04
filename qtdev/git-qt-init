@@ -1,0 +1,63 @@
+#!/bin/bash
+
+if [[ $# < 1 ]]
+then
+    >&2 echo "Pass the branch"
+    exit 1
+fi
+
+worktree_root=~/qt
+branch=$1
+
+if [[ -d ${worktree_root}/${branch} ]]
+then
+    >&2 echo "${worktree_root}/${branch} already exists"
+    exit 2
+fi
+
+function add_worktree()
+{
+    if [[ -d .git ]]
+    then
+        module=$1
+
+        git fetch origin --recurse-submodules=no
+        git checkout origin/${branch}
+        if [[ $? == 0 ]]
+        then
+            echo "Adding worktree for $module"
+            [[ -z $module ]] || git worktree prune
+            git worktree add ${worktree_root}/${branch}/${module} ${branch}
+        fi
+    fi
+}
+
+add_worktree
+if [[ ! -d ${worktree_root}/${branch} ]]
+then
+    >&2 echo "Failed to create worktree for $PWD - aborting"
+    exit 3
+fi
+
+if cd ${worktree_root}/${branch}
+then
+    for subproject in */
+    do
+        [[ "$(ls -A ${subproject})" ]] || rm -r "${subproject}"
+    done
+
+    mv .git .git_worktree
+    cp -r ../dev/.vscode .vscode
+    cp ../dev/dev.code-workspace ${branch}.code-workspace
+    mkdir ../${branch}-build
+    cd -
+fi
+
+for module in qt*/
+do
+    if cd ${module}
+    then
+        add_worktree ${module}
+        cd ..
+    fi
+done
