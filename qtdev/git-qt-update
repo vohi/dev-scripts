@@ -38,24 +38,24 @@ function update
 
   remote=$(git rev-parse --abbrev-ref --symbolic-full-name @{u})
   remote=${remote%%"/"*}
-  [[ -z $remote ]] && remote="origin"
+  [[ -z "$remote" ]] && remote="origin"
 
   stashsha=$(git stash create /dev/null)
-  if [ ! -z $stashsha ]
+  if [[ ! -z "$stashsha" ]]
   then
-    git stash store $stashsha -m "From $0"
+    git stash store "$stashsha" -m "From $0"
     git reset --hard
   fi
 
-  git rebase $remote/$branch
+  git rebase "$remote/$branch"
 
-  if [ ! -z $stashsha ]
+  if [[ ! -z "$stashsha" ]]
   then
     git stash pop
   fi
 }
 
-if [ -f .git_worktree ]
+if [[ -f .git_worktree ]]
 then
   log "Updating toplevel project"
   pwd
@@ -64,14 +64,14 @@ then
   update
   mv .git .git_worktree
   log "Toplevel project updated"
-elif [ -f .git ]
+elif [[ -f .git ]]
 then
   branch=$(git branch --show-current --no-color)
 else
   branch=$(basename $PWD)
 fi
 
-[[ -z $branch ]] && echo "Can't determine branch"
+[[ -z "$branch" ]] && echo "Can't determine branch"
 
 log "Updating $branch"
 
@@ -84,13 +84,13 @@ superrepo=""
 
 for subproject in */
 do
-    [ ! -f "${subproject}.git" ] && continue
+    [[ ! -f "${subproject}.git" ]] && continue
     subproject=$(basename $subproject)
 
     log "Updating $subproject"
     cd $subproject
 
-    if [ -z $superrepo ]
+    if [[ -z "$superrepo" ]]
     then
       superrepo=$(git rev-parse --git-dir)
       superrepo="${superrepo%\.git*}"
