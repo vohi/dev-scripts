@@ -68,9 +68,13 @@ fi
 error=-1
 printf "Using Qt in '${QTDIR}${ARCH}' to build '$SOURCE'"
 if [ -f "${QTDIR}${ARCH}bin/qt-cmake" ] && [ -f $input ]; then
-  printf ", trying 'qt-cmake'..."
+  HELPER="qt-cmake"
+  if ! grep "project\(.*\)$" $SOURCE/CMakeLists.txt; then
+    HELPER="${HELPER}-standalone-test"
+  fi
+  printf ", trying '$HELPER'..."
   [ -z "$@" ] && ARGS="-GNinja" || ARGS="$@"
-  cmakeerror=$(${QTDIR}${ARCH}"bin/qt-cmake" $SOURCE $ARGS > /dev/null)
+  cmakeerror=$(${QTDIR}${ARCH}"bin/${HELPER}" $SOURCE $ARGS > /dev/null)
   error=$?
 fi
 
