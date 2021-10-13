@@ -13,7 +13,10 @@ shift
 
 # try official package
 QTDIR=$HOME/qt/packages/"$VERSION"/
-ARCH=clang_64/
+ARCH=macos/
+if [[ "$VERSION" =~ ^5.*$|^6\.0.*$ ]]; then
+  ARCH=clang_64/
+fi
 
 # build from git branch, shadow toplevel build
 if [ ! -d "$QTDIR" ]; then
