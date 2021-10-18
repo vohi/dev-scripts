@@ -28,6 +28,12 @@ repository=$(git rev-parse --git-dir)
 repository=${repository%/\.git/worktrees*}
 repository=${repository%/worktrees/$module}
 
+if [[ $repository =~ .git/modules/$module ]]
+then
+  repository=${repository%/\.git/modules/$module/worktrees*}
+  repository=${repository}/${module}
+fi
+
 if [ -z "$1" ]
 then
     sha=$branch
