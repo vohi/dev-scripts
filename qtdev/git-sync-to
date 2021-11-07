@@ -5,7 +5,7 @@ do
     cd ..
     if [ $? -gt 0 ]
     then
-        >&2 echo "This git command needs to be run a Qt supermodule clone"
+        >&2 echo "This git command needs to be run within a Qt supermodule clone"
         exit 1
     fi
 done
