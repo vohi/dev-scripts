@@ -24,14 +24,20 @@ fi
 
 sha="$*"
 
-repository=$(git rev-parse --git-dir)
+git_dir=$(git rev-parse --git-dir)
+repository=$git_dir
 repository=${repository%/\.git/worktrees*}
-repository=${repository%/worktrees/$module}
-
-if [[ $repository =~ .git/modules/$module ]]
+if [ $repository == $git_dir ]
 then
-  repository=${repository%/\.git/modules/$module/worktrees*}
+  repository=${repository%/\.git/modules/$module/worktrees/$module*}
   repository=${repository}/${module}
+else
+  repository=${repository%/worktrees/$module}
+  if [[ $repository =~ .git/modules/$module ]]
+  then
+    repository=${repository%/\.git/modules/$module/worktrees*}
+    repository=${repository}/${module}
+  fi
 fi
 
 if [ -z "$1" ]
@@ -51,6 +57,12 @@ error=0
 
 if [ "$count" -gt 1 ]
 then
+  if [ $repository == $PWD ]
+  then
+    >&2 echo "Warning: operating in current working directory, stashing changes!"
+    git stash
+  fi
+  echo "Working in git directory at $repository"
   cd $repository
   git checkout $remote/$branch 2> /dev/null
   git reset --hard $remote/$branch
