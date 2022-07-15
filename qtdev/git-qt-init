@@ -22,6 +22,15 @@ function add_worktree()
         module=$1
 
         git fetch origin --recurse-submodules=no
+        if ! git describe "${branch}"
+        then
+            git branch "${branch}" --track "origin/${branch}"
+            if [[ $? != 0 ]]
+            then
+                >&2 echo "Failed to create branch ${branch} for ${module}"
+                return
+            fi
+        fi
         git checkout origin/${branch}
         if [[ $? == 0 ]]
         then
