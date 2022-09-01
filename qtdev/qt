@@ -76,7 +76,7 @@ if [ -f "${QTDIR}${ARCH}bin/qt-cmake" ] && [ -f $input ]; then
     HELPER="${HELPER}-standalone-test"
   fi
   printf ", trying '$HELPER'..."
-  [ -z "$@" ] && ARGS="-GNinja" || ARGS="$@"
+  [[ -z "${@}" ]] && ARGS="-GNinja" || ARGS="$@"
   cmakeerror=$(${QTDIR}${ARCH}"bin/${HELPER}" $SOURCE $ARGS > /dev/null)
   error=$?
 fi
