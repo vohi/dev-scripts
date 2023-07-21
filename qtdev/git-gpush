@@ -64,6 +64,7 @@ then
   fi
   echo "Working in git directory at $repository"
   cd $repository
+  git cherry-pick --abort 2> /dev/null
   git checkout $remote/$branch 2> /dev/null
   git reset --hard $remote/$branch
   git cherry-pick $sha
